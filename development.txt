@@ -1,0 +1,3 @@
+add functionality for comments
+add functionality for adding youtube videos
+deploy and convert to app
