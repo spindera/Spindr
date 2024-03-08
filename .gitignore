@@ -1,3 +1,4 @@
 senv/*
 spindr-deploykey.pem
 .env
+**/__pycache__/
