@@ -2,10 +2,13 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.files.base import ContentFile
+from django.core.files.images import ImageFile
 from django.contrib.auth.models import User, auth
 from .models import Profile, Post, LikePost, FollowersCount
 from itertools import chain
-import random
+from .filesHandler.resizeimg import compress_to_webp as comp
+import random, uuid
 
 
 # Create your views here.
@@ -151,13 +154,17 @@ def upload(request):
     
     if request.method=="POST":
         user=request.user.username
+        uuid_str = uuid.uuid4()
+        fileuid = str(uuid_str)
         # Check if the uploaded file is an image or a video
         if 'image_upload' in request.FILES:
             uploaded_file = request.FILES['image_upload']
             content_type = uploaded_file.content_type
             if content_type.split('/')[0] == 'image':
                 # Handle image file upload
-                image = request.FILES.get('image_upload')
+                Pimage = request.FILES.get('image_upload')
+                Cimage =  ContentFile(comp(Pimage))
+                image = ImageFile(Cimage, name=f'image_{fileuid}.webp')
                 caption = request.POST['caption']
                 
                 new_post=Post.objects.create(user=user, image=image, caption=caption)
